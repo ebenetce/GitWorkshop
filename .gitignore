@@ -34,6 +34,7 @@ codegen/
 
 # buildtool cache folder
 .buildtool/
+build/
 
 # SimBiology backup files
 *.sbproj.backup

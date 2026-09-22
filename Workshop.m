@@ -201,6 +201,18 @@ movefile("ExampleFiles/data.mat", 'data.mat')
 movefile("ExampleFiles/doc", 'tbx/')
 rmdir('ExampleFiles','s')
 %%
+%[text] ### Usage
+mdl = uniformirbvarm(3, 2);
+mdl.estimate(rand(100,3)) %[output:755ac30d] %[output:4013acc9]
+%%
+%[text] ### Testing the tool
+runtests('tests/uniformirbvarmTest.m') %[output:8f283a63] %[output:1f5e3292]
+%%
+%[text] ### External usage
+%[text] How would somebody else use this tool?
+edit main.m
+%%
+%[text] Once we are happy with the tool, we submit the changes to Git.
 git add tbx/svar
 git add tests/
 git add main.m
@@ -209,7 +221,17 @@ git commit -am "added model" %[output:7755501a]
 git push %[output:688d6a7d]
 %%
 %[text] ## Buildtool
-
+%[text] A `buildfile.m` turns the project quality gate into named, repeatable tasks. The build file in this repository follows the same pattern used by many MathWorks toolbox projects: `check` runs Code Analyzer, `test` runs the unit tests and produces coverage reports, and `package` creates the installable `.mltbx` file only after the checks and tests pass.
+%[text] From the repository root, discover the available tasks:
+buildtool -tasks
+%[text] Run the default task, which runs the tests and writes HTML and XML reports to the ignored `build/` folder:
+buildtool
+%[text] Run the tasks individually while developing:
+buildtool check
+buildtool test
+%[text] Create a release archive. The `package` task depends on `check` and `test`, so it cannot create a toolbox from code that has not passed those gates:
+buildtool package
+%[text] The resulting `releases/svar.mltbx` is an installable toolbox archive. Keep release artifacts out of ordinary source commits unless your team's release process explicitly versions them. In continuous integration, run `buildtool check test` on every change and reserve `buildtool package` for a tagged release.
 %%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.
@@ -290,6 +312,18 @@ git push %[output:688d6a7d]
 %---
 %[output:575d10fb]
 %   data: {"dataType":"text","outputData":{"text":"Deleted branch change-num-lags (was 168bb9f).\n","truncated":false}}
+%---
+%[output:755ac30d]
+%   data: {"dataType":"text","outputData":{"text":"\nBayesian VAR under conjugate priors\nEffective Sample Size:          98\nNumber of equations:            3\nNumber of estimated Parameters: 21\n             |   Mean     Std  \n-------------------------------\n Constant(1) |  0.6312  0.1692 \n Constant(2) |  0.4577  0.1666 \n Constant(3) |  0.4471  0.1597 \n AR{1}(1,1)  | -0.0327  0.1139 \n AR{1}(2,1)  |  0.0913  0.1121 \n AR{1}(3,1)  | -0.0163  0.1075 \n AR{1}(1,2)  | -0.1712  0.1171 \n AR{1}(2,2)  | -0.0595  0.1153 \n AR{1}(3,2)  |  0.0576  0.1106 \n AR{1}(1,3)  | -0.0270  0.1197 \n AR{1}(2,3)  | -0.0296  0.1178 \n AR{1}(3,3)  | -0.0030  0.1130 \n AR{2}(1,1)  | -0.0084  0.1138 \n AR{2}(2,1)  |  0.0496  0.1120 \n AR{2}(3,1)  |  0.1025  0.1074 \n AR{2}(1,2)  |  0.0751  0.1183 \n AR{2}(2,2)  |  0.0347  0.1165 \n AR{2}(3,2)  | -0.0429  0.1117 \n AR{2}(1,3)  | -0.0581  0.1194 \n AR{2}(2,3)  | -0.0762  0.1175 \n AR{2}(3,3)  |  0.0106  0.1127 \n<strong>   Innovations Covariance Matrix   <\/strong>\n    |    Y1        Y2        Y3    \n-----------------------------------\n Y1 |  0.1035   -0.0211   -0.0079  \n    | (0.0167)  (0.0118)  (0.0111) \n Y2 | -0.0211    0.1003   -0.0107  \n    | (0.0118)  (0.0162)  (0.0110) \n Y3 | -0.0079   -0.0107    0.0922  \n    | (0.0111)  (0.0110)  (0.0149) \n","truncated":false}}
+%---
+%[output:4013acc9]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('conjugatebvarm')\" style=\"font-weight:bold\">conjugatebvarm<\/a> with properties:\n\n        Description: \"3-Dimensional VAR(2) Model\"\n          NumSeries: 3\n                  P: 2\n        SeriesNames: [\"Y1\"    \"Y2\"    \"Y3\"]\n    IncludeConstant: 1\n       IncludeTrend: 0\n      NumPredictors: 0\n                 Mu: [21×1 double]\n                  V: [7×7 double]\n              Omega: [3×3 double]\n                DoF: 83\n                 AR: {[3×3 double]  [3×3 double]}\n           Constant: [3×1 double]\n              Trend: [3×0 double]\n               Beta: [3×0 double]\n         Covariance: [3×3 double]\n"}}
+%---
+%[output:8f283a63]
+%   data: {"dataType":"text","outputData":{"text":"Running uniformirbvarmTest\n........\nDone uniformirbvarmTest\n__________\n\n","truncated":false}}
+%---
+%[output:1f5e3292]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  1×8 <a href=\"matlab:helpPopup('matlab.unittest.TestResult')\" style=\"font-weight:bold\">TestResult<\/a> array with properties:\n\n    Name\n    Passed\n    Failed\n    Incomplete\n    Duration\n    Details\n\nTotals:\n   8 Passed, 0 Failed, 0 Incomplete.\n   0.12105 seconds testing time.\n"}}
 %---
 %[output:7755501a]
 %   data: {"dataType":"text","outputData":{"text":"[main 5ddff87] added model\n 73 files changed, 1259 insertions(+), 20 deletions(-)\n create mode 100644 .gitattributes\n create mode 100644 .gitignore\n create mode 100644 data.mat\n create mode 100644 main.m\n create mode 100644 resources\/project\/EEtUlUb-dLAdf0KpMVivaUlztwA\/hbP1Bb1kj0UkL2YOyboI4mPjorkd.xml\n create mode 100644 resources\/project\/EEtUlUb-dLAdf0KpMVivaUlztwA\/hbP1Bb1kj0UkL2YOyboI4mPjorkp.xml\n create mode 100644 resources\/project\/L-idrZRjZXZ8jYd7-E8teU8ewW4\/Tc63QJFVmV6mwhCwZus6YaXsEcsd.xml\n create mode 100644 resources\/project\/L-idrZRjZXZ8jYd7-E8teU8ewW4\/Tc63QJFVmV6mwhCwZus6YaXsEcsp.xml\n create mode 100644 resources\/project\/L-idrZRjZXZ8jYd7-E8teU8ewW4\/agxR7FUzCbenMOuGmnOZCKnzhHEd.xml\n create mode 100644 resources\/project\/L-idrZRjZXZ8jYd7-E8teU8ewW4\/agxR7FUzCbenMOuGmnOZCKnzhHEp.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/2kj09UetkV_lru3gvSPXnY6-nM4d.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/2kj09UetkV_lru3gvSPXnY6-nM4p.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/KKyDJtbdIBOlaeHmIZd5VX6vqx8d.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/KKyDJtbdIBOlaeHmIZd5VX6vqx8p.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/QWNDYJD5mGW1bWYvPx9DtKnxzw4d.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/QWNDYJD5mGW1bWYvPx9DtKnxzw4p.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/R1RggVhA72agIvELiuhWPRS8F0Id.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/R1RggVhA72agIvELiuhWPRS8F0Ip.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/aEHSZBIY-yve10yGis12Zr5DLZod.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/aEHSZBIY-yve10yGis12Zr5DLZop.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/j4xwF_j8iFTVayUMfxLgMnTbencd.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/j4xwF_j8iFTVayUMfxLgMnTbencp.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/r8LR4nLmg9ai3oHrW1r_-KocQzkd.xml\n create mode 100644 resources\/project\/NjSPEMsIuLUyIpr2u1Js5bVPsOs\/r8LR4nLmg9ai3oHrW1r_-KocQzkp.xml\n create mode 100644 resources\/project\/Project.xml\n create mode 100644 resources\/project\/Tc63QJFVmV6mwhCwZus6YaXsEcs\/2Pq6k-fJiagyXplQa5TYqnuGhFcd.xml\n create mode 100644 resources\/project\/Tc63QJFVmV6mwhCwZus6YaXsEcs\/2Pq6k-fJiagyXplQa5TYqnuGhFcp.xml\n create mode 100644 resources\/project\/Tc63QJFVmV6mwhCwZus6YaXsEcs\/oYR8fPiRhQH7kYmRh_6j5W9Za4Ad.xml\n create mode 100644 resources\/project\/Tc63QJFVmV6mwhCwZus6YaXsEcs\/oYR8fPiRhQH7kYmRh_6j5W9Za4Ap.xml\n create mode 100644 resources\/project\/YhuPDDuEWIGe0C07ihHYccefon0\/mXCVGRnnD-Nx2c1j7zCLj-Znmgod.xml\n create mode 100644 resources\/project\/YhuPDDuEWIGe0C07ihHYccefon0\/mXCVGRnnD-Nx2c1j7zCLj-Znmgop.xml\n create mode 100644 resources\/project\/fjRQtWiSIy7hIlj-Kmk87M7s21k\/NjSPEMsIuLUyIpr2u1Js5bVPsOsd.xml\n create mode 100644 resources\/project\/fjRQtWiSIy7hIlj-Kmk87M7s21k\/NjSPEMsIuLUyIpr2u1Js5bVPsOsp.xml\n create mode 100644 resources\/project\/hLMKfvmMZYFbdoE4Xco7ryXas6s\/8Qdz0iiiuHlFJjxB6c5reQ4NAkQd.xml\n create mode 100644 resources\/project\/hLMKfvmMZYFbdoE4Xco7ryXas6s\/8Qdz0iiiuHlFJjxB6c5reQ4NAkQp.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/L-idrZRjZXZ8jYd7-E8teU8ewW4d.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/L-idrZRjZXZ8jYd7-E8teU8ewW4p.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/TMK4UzWHdRLhy_w-CHt9y11Q8XAd.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/TMK4UzWHdRLhy_w-CHt9y11Q8XAp.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/YhuPDDuEWIGe0C07ihHYccefon0d.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/YhuPDDuEWIGe0C07ihHYccefon0p.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/hLMKfvmMZYFbdoE4Xco7ryXas6sd.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/hLMKfvmMZYFbdoE4Xco7ryXas6sp.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/qD-kr16wmwlzR-nIg1IG_vvRrWkd.xml\n create mode 100644 resources\/project\/qaw0eS1zuuY1ar9TdPn1GMfrjbQ\/qD-kr16wmwlzR-nIg1IG_vvRrWkp.xml\n create mode 100644 resources\/project\/root\/EEtUlUb-dLAdf0KpMVivaUlztwAp.xml\n create mode 100644 resources\/project\/root\/GiiBklLgTxteCEmomM8RCvWT0nQd.xml\n create mode 100644 resources\/project\/root\/GiiBklLgTxteCEmomM8RCvWT0nQp.xml\n create mode 100644 resources\/project\/root\/fjRQtWiSIy7hIlj-Kmk87M7s21kp.xml\n create mode 100644 resources\/project\/root\/qaw0eS1zuuY1ar9TdPn1GMfrjbQp.xml\n create mode 100644 resources\/project\/rootp.xml\n create mode 100644 svar.prj\n create mode 100644 tbx\/svar\/+svar\/+svar\/companionMatrix.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/companionPower.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/estimateResidualVariances.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/fevd.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/irf.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/logDetPD.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/seasonalDummies.m\n create mode 100644 tbx\/svar\/+svar\/+svar\/varmFromCoefficients.m\n create mode 100644 tbx\/svar\/+svar\/companionMatrix.m\n create mode 100644 tbx\/svar\/+svar\/companionPower.m\n create mode 100644 tbx\/svar\/+svar\/estimateResidualVariances.m\n create mode 100644 tbx\/svar\/+svar\/fevd.m\n create mode 100644 tbx\/svar\/+svar\/irf.m\n create mode 100644 tbx\/svar\/+svar\/logDetPD.m\n create mode 100644 tbx\/svar\/+svar\/seasonalDummies.m\n create mode 100644 tbx\/svar\/+svar\/varmFromCoefficients.m\n create mode 100644 tbx\/svar\/Contents.m\n create mode 100644 tbx\/svar\/bvar2var.m\n create mode 100644 tbx\/svar\/uniformirbvarm.m\n create mode 100644 tests\/uniformirbvarmTest.m\n","truncated":false}}
