@@ -1,0 +1,51 @@
+default:
+  # This image is expected to include MATLAB, matlab-batch, and its license token.
+  image: matlab
+
+stages:
+  - test
+  - package
+  - deploy
+
+test:
+  stage: test
+  script:
+    - matlab-batch "buildtool test"
+  artifacts:
+    when: always
+    paths:
+      - public/
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: >-
+        $CI_PIPELINE_SOURCE == "merge_request_event" &&
+        ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" ||
+        $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop")
+
+package:
+  stage: package
+  needs:
+    - job: test
+      artifacts: false
+  script:
+    - matlab-batch "buildtool package -skip test"
+  artifacts:
+    paths:
+      - releases/svar.mltbx
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+deploy-pages:
+  stage: deploy
+  needs:
+    - job: test
+      artifacts: true
+  script:
+    - test -d public
+  pages:
+    publish: public
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
