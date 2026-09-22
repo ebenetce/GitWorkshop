@@ -1,5 +1,8 @@
 # Working with Git and MATLAB
 
+[![SVAR tbx](https://github.com/ebenetce/GitWorkshop/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/ebenetce/GitWorkshop/actions/workflows/build.yml?query=branch%3Adevelop)
+[![coverage](https://img.shields.io/badge/dynamic/xml?url=https%3A%2F%2Febenetce.github.io%2FGitWorkshop%2Fcoverage.xml&query=round%28%2F%2Fcoverage%2F%40line-rate%2A100%29&suffix=%25&label=coverage)](https://ebenetce.github.io/GitWorkshop/coverage.html)
+
 A hands-on MATLAB workshop for using Git to manage code, collaborate
 confidently, and turn a project into a testable, packageable toolbox.
 
