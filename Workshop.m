@@ -144,10 +144,10 @@ contentsLines = [
     ];
 writelines(contentsLines,contentsFile)
 project = matlab.project.createProject(Folder=pwd,Name=toolboxName);
-addFolderIncludingChildFiles(project,fullfile(pwd,"tbx")); %[output:3fb6fa01]
-addFolderIncludingChildFiles(project,fullfile(pwd,"tests")); %[output:2702b4e6]
-addFolderIncludingChildFiles(project,fullfile(pwd,"doc")); %[output:43729fab]
-addPath(project,fullfile(pwd,"tbx",toolboxName)); %[output:9d1f31bc]
+addFolderIncludingChildFiles(project,fullfile(pwd,"tbx"));
+addFolderIncludingChildFiles(project,fullfile(pwd,"tests"));
+addFolderIncludingChildFiles(project,fullfile(pwd,"doc"));
+addPath(project,fullfile(pwd,"tbx",toolboxName));
 %%
 %[text] ### Describe the toolbox with `Contents.m`
 %[text] The previous code creates `tbx/svar/Contents.m` with `writelines`. Its first line is the toolbox H1 description; its version line lets MATLAB identify the toolbox. The generated starter file includes a description, version 1.0.0, date, and a list of public functions.
@@ -192,10 +192,17 @@ help svar
 %%
 %[text] Setup files
 unzip ExampleFiles.zip .
-movefile("ExampleFiles/uniformirbvarm.m", 'tbx/svar/') %[output:9b503595]
+movefile("ExampleFiles/uniformirbvarm.m", 'tbx/svar/')
 movefile("ExampleFiles/uniformirbvarmTest.m", 'tests/')
 movefile("ExampleFiles/bvar2var.m", 'tbx/svar/')
 movefile("ExampleFiles/+svar", 'tbx/svar/+svar')
+movefile("ExampleFiles/main.m", 'main.m')
+movefile("ExampleFiles/data.mat", 'data.mat')
+%%
+git add tbx/svar
+git add tests/
+git add main.m
+git add data.mat
 %%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.
@@ -276,19 +283,4 @@ movefile("ExampleFiles/+svar", 'tbx/svar/+svar')
 %---
 %[output:575d10fb]
 %   data: {"dataType":"text","outputData":{"text":"Deleted branch change-num-lags (was 168bb9f).\n","truncated":false}}
-%---
-%[output:3fb6fa01]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.project.ProjectFile')\" style=\"font-weight:bold\">ProjectFile<\/a> with properties:\n\n                   Path: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tbx\"\n               Revision: \"\"\n    SourceControlStatus: Unknown\n                 Labels: [1×0 matlab.project.Label]\n"}}
-%---
-%[output:2702b4e6]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.project.ProjectFile')\" style=\"font-weight:bold\">ProjectFile<\/a> with properties:\n\n                   Path: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tests\"\n               Revision: \"\"\n    SourceControlStatus: Unknown\n                 Labels: [1×0 matlab.project.Label]\n"}}
-%---
-%[output:43729fab]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.project.ProjectFile')\" style=\"font-weight:bold\">ProjectFile<\/a> with properties:\n\n                   Path: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\doc\"\n               Revision: \"\"\n    SourceControlStatus: Unknown\n                 Labels: [1×0 matlab.project.Label]\n"}}
-%---
-%[output:9d1f31bc]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.project.PathFolder')\" style=\"font-weight:bold\">PathFolder<\/a> with properties:\n\n              File: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tbx\\SVAR\"\n    StoredLocation: \"tbx\/SVAR\"\n              Type: \"Relative\"\n"}}
-%---
-%[output:9b503595]
-%   data: {"dataType":"error","outputData":{"errorType":"runtime","text":"Error using <a href=\"matlab:matlab.lang.internal.introspective.errorDocCallback('movefile')\" style=\"font-weight:bold\">movefile<\/a>\nThe input 'C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tbx\\svar' is not a filename, folder name, or volume label syntax."}}
 %---
