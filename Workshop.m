@@ -190,6 +190,13 @@ help svar
 %[text] 6. Push the branch and open a review or pull request when your team's process calls for it. \
 %[text] Small commits make reviews clearer and make it much easier to locate, reuse, or revert a change.
 %%
+%[text] Setup files
+unzip ExampleFiles.zip .
+movefile("ExampleFiles/uniformirbvarm.m", 'tbx/svar/') %[output:9b503595]
+movefile("ExampleFiles/uniformirbvarmTest.m", 'tests/')
+movefile("ExampleFiles/bvar2var.m", 'tbx/svar/')
+movefile("ExampleFiles/+svar", 'tbx/svar/+svar')
+%%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.
 %[text] Before changing a shared file, pull first and communicate with teammates when you expect to edit the same area. Resolve conflicts in the affected file, run the code again, and commit the resolution; a conflict is a request for a human decision, not an error to hide.
@@ -281,4 +288,7 @@ help svar
 %---
 %[output:9d1f31bc]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.project.PathFolder')\" style=\"font-weight:bold\">PathFolder<\/a> with properties:\n\n              File: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tbx\\SVAR\"\n    StoredLocation: \"tbx\/SVAR\"\n              Type: \"Relative\"\n"}}
+%---
+%[output:9b503595]
+%   data: {"dataType":"error","outputData":{"errorType":"runtime","text":"Error using <a href=\"matlab:matlab.lang.internal.introspective.errorDocCallback('movefile')\" style=\"font-weight:bold\">movefile<\/a>\nThe input 'C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\tbx\\svar' is not a filename, folder name, or volume label syntax."}}
 %---
