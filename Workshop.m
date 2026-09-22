@@ -274,6 +274,10 @@ buildtool doc
 buildtool package
 %[text] The resulting `releases/svar.mltbx` is an installable toolbox archive. Keep release artifacts out of ordinary source commits unless your team's release process explicitly versions them. In continuous integration, run `buildtool check test doc` on every change and reserve `buildtool package` for a tagged release.
 %%
+%[text] ## Automation
+%[text] Having some level of automation helps a lot. Even if only the tests are running automatically, it speed up development quite a bit.
+edit('.github/workflows/build.yml')
+%%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.
 %[text] Before changing a shared file, pull first and communicate with teammates when you expect to edit the same area. Resolve conflicts in the affected file, run the code again, and commit the resolution; a conflict is a request for a human decision, not an error to hide.
