@@ -148,6 +148,7 @@ addFolderIncludingChildFiles(project,fullfile(pwd,"tbx"));
 addFolderIncludingChildFiles(project,fullfile(pwd,"tests"));
 addFolderIncludingChildFiles(project,fullfile(pwd,"doc"));
 addPath(project,fullfile(pwd,"tbx",toolboxName));
+addPath(project,fullfile(pwd,"tbx","doc"));
 %%
 %[text] ### Describe the toolbox with `Contents.m`
 %[text] The previous code creates `tbx/svar/Contents.m` with `writelines`. Its first line is the toolbox H1 description; its version line lets MATLAB identify the toolbox. The generated starter file includes a description, version 1.0.0, date, and a list of public functions.
@@ -229,9 +230,11 @@ buildtool
 %[text] Run the tasks individually while developing:
 buildtool check
 buildtool test
-%[text] Create a release archive. The `package` task depends on `check` and `test`, so it cannot create a toolbox from code that has not passed those gates:
+%[text] Build the documentation from the Markdown files in `tbx/doc`. The task converts Markdown to HTML, runs its code examples, and creates the Help browser index:
+buildtool doc
+%[text] Create a release archive. The `package` task depends on `check`, `test`, and `doc`, so it cannot create a toolbox from code that has not passed those gates:
 buildtool package
-%[text] The resulting `releases/svar.mltbx` is an installable toolbox archive. Keep release artifacts out of ordinary source commits unless your team's release process explicitly versions them. In continuous integration, run `buildtool check test` on every change and reserve `buildtool package` for a tagged release.
+%[text] The resulting `releases/svar.mltbx` is an installable toolbox archive. Keep release artifacts out of ordinary source commits unless your team's release process explicitly versions them. In continuous integration, run `buildtool check test doc` on every change and reserve `buildtool package` for a tagged release.
 %%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.

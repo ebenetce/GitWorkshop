@@ -13,14 +13,40 @@ plan("test") = TestTask("tests/", ...
     TestResults="public/test-results.html", ...
     CodeCoverageResults=["public/coverage.html" "public/coverage.xml"]);
 
-plan("package").Dependencies = ["check" "test"];
+plan("package").Dependencies = ["check" "test" "doc"];
 plan.DefaultTasks = "test";
+end
+
+function docTask(~)
+% Build HTML documentation and the MATLAB Help browser index.
+
+if isempty(ver('docmaker'))
+    websave('MATLAB_DocMaker.mltbx','https://github.com/mathworks/docmaker/releases/latest/download/MATLAB_DocMaker.mltbx');
+    cobj = onCleanup(@() delete('MATLAB_DocMaker.mltbx'));
+    matlab.addons.install('MATLAB_DocMaker.mltbx', true);
+end
+
+doc = fullfile( currentProject().RootFolder, "tbx", "doc" );
+
+docdelete(doc)
+
+md = fullfile(doc,"**","*.md"); % Markdown documents
+
+websave(fullfile('tbx','doc','mathjax-config.js'),'https://raw.githubusercontent.com/mathworks/docmaker/refs/heads/master/tbx/docmaker/resources/mathjax-config.js')
+html = docconvert(md, Scripts = fullfile(doc, 'mathjax-config.js')); % convert to HTML
+
+docrun(html) % run code and insert output
+docindex(doc); % index
+
 end
 
 function packageTask(~)
 % Create a distributable toolbox archive after quality checks and tests pass.
 
-v = ver('svar').Version;
+projectRoot = fileparts(mfilename("fullpath"));
+toolboxFolder = fullfile(projectRoot, "tbx");
+releaseFolder = fullfile(projectRoot, "releases");
+v = toolboxVersion(fullfile(toolboxFolder, "svar"));
 
 if ~isfolder(releaseFolder)
     mkdir(releaseFolder)
@@ -36,4 +62,19 @@ options.Description = "Tools for estimating and analysing structural " + ...
 options.OutputFile = fullfile(releaseFolder, "svar.mltbx");
 
 matlab.addons.toolbox.packageToolbox(options)
+end
+
+function version = toolboxVersion(toolboxFolder)
+% Read the toolbox version declared in Contents.m.
+
+contentsText = fileread(fullfile(toolboxFolder, "Contents.m"));
+versionTokens = regexp(contentsText, "Version\s+(\d+\.\d+\.\d+)", ...
+    "tokens", "once");
+
+if isempty(versionTokens)
+    error("svar:build:MissingVersion", ...
+        "Add a 'Version major.minor.patch' line to tbx/svar/Contents.m.")
+end
+
+version = string(versionTokens{1});
 end
