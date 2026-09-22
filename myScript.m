@@ -1,1 +1,1 @@
-numLags = 5;
+numLags = 4;
