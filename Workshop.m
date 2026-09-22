@@ -13,7 +13,7 @@
 %[text] Git records the evolution of files in a repository. It works locally: creating a commit does not send anything to a server. A remote such as GitHub, GitLab, Bitbucket, or an internal Git server is where you share commits with other people.
 %[text]{"align":"center"} ![](text:image:372a)
 %[text] For this workshop, open MATLAB in the repository root: the folder containing the hidden `.git` directory.
-%[text] MATLAB includes a Git API, so you do not need an external Git installation to work with a repository from MATLAB. Create a repository object with:
+%[text] MATLAB includes a Git API, so you do not need an external Git installation to work with a repository from MATLAB. Create a repository object with **`gitrepo`**, **`gitinit`** or most commonly:
 %[text] ```matlabCodeExample
 %[text] repo = gitclone('https://github.com/ebenetce/GitWorkshop.git')
 %[text] ```
