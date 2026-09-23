@@ -15,11 +15,11 @@
 %[text] For this workshop, open MATLAB in the repository root: the folder containing the hidden `.git` directory.
 %[text] MATLAB includes a Git API, so you do not need an external Git installation to work with a repository from MATLAB. Create a repository object with **`gitrepo`**, **`gitinit`** or most commonly:
 %[text] ```matlabCodeExample
-%[text] repo = gitclone('https://github.com/ebenetce/gitworkshop!')
+%[text] repo = gitclone('https://github.com/ebenetce/gitworkshop')
 %[text] ```
 %[text] `repo` is a `matlab.git.GitRepository` object. Its methods let you inspect status and history, create and switch branches, commit, merge, pull, and push.
 %[text] Alternatively, if Git is installed on your computer, you can call its command-line interface from the MATLAB Command Window. Confirm that MATLAB can find the external Git executable:
-!git --version %[output:39c3495d]
+!git --version
 %[text] For repeated command-line use, define this local helper once. It removes the leading `!`, so `git status` runs the same command as `!git status`:
 function git(varargin)
 cmd = sprintf("git %s",strjoin(varargin," "));
@@ -45,11 +45,11 @@ end
 %[text] All source control commands are always backed up by UI shortcuts on the file system. Right click \> source control
 %[text] ![](text:image:705f)
 %[text] Start on the `develop` branch and inspect the repository:
-repo = gitrepo() %[output:2d6ca45c]
-switchBranch(repo,"develop",Create=true) %[output:12d34c66]
-statusDetails = status(repo)
-statusDetails.Status
-commitHistory = log(repo) %[output:40cd6c12] %[output:0d74041c] %[output:52225474]
+repo = gitrepo() %[output:05973b1e]
+switchBranch(repo,"develop",Create=true) %[output:23cc48d6]
+statusDetails = status(repo) %[output:3ae97fa4]
+statusDetails.Status %[output:29a73910]
+commitHistory = log(repo) %[output:63f3c471]
 %[text] `status` reports the current state; `log` shows the commit history.
 %%
 %[text] ### Create and review a file
@@ -60,29 +60,29 @@ fclose(fid);
 %%
 %[text] Inspect the new, untracked file:
 statusDetails = status(repo);
-statusDetails.Status %[output:5b4064b6]
+statusDetails.Status %[output:210a95de]
 %%
 %[text] Stage the file, then inspect what the first commit will contain:
 add(repo,"myScript.m")
 statusDetails = status(repo);
-statusDetails.Status %[output:4e75827e]
+statusDetails.Status %[output:5a88dbe6]
 %%
-commit(repo, "Files","myScript.m","Message","Added myScript.m") %[output:57e6681b]
+commit(repo, "Files","myScript.m","Message","Added myScript.m") %[output:99d2b35a]
 statusDetail = status(repo);
-statusDetail.Status %[output:7cef3822]
+statusDetail.Status %[output:0bd5bcf5]
 %%
 %[text] Try now to make an edit to the file:
 edit myScript.m
 %%
 %[text] Complete the full Git loop once from the command line. First inspect the working folder and the unstaged change:
-git status
-git diff -- myScript.m %[output:9d9b61c6]
+git status %[output:97f5850a]
+git diff -- myScript.m %[output:825dd3bd]
 %[text] Stage only this file, then inspect exactly what the commit will contain:
 git add myScript.m
-git diff --staged -- myScript.m
+git diff --staged -- myScript.m %[output:41435b64]
 %[text] Commit the reviewed change locally, then publish the branch:
-git commit -m "Changed to 4 lags"
-git push origin develop
+git commit -m "Changed to 4 lags" %[output:69860578]
+git push origin develop %[output:02d4bbbe]
 %[text] You can also compare the file graphically with **Source Control \> View Changes**:
 %[text] ![](text:image:5a2c)
 %%
@@ -92,27 +92,27 @@ git push origin develop
 %[text] A branch is an independent line of development from a shared codebase; it lets you build and test a focused change safely, then review and merge it into develop when it is ready.
 %[text] Use branches to isolate a focused change, so you can develop, review, and merge it without disrupting the shared develop branch.
 %[text] Create a descriptive branch for the change:
-switchBranch(repo, "change-num-lags", Create = true) %[output:9649afe2]
+switchBranch(repo, "change-num-lags", Create = true) %[output:253b608f]
 %%
-git branch %[output:4fc8f37e]
+git branch %[output:223c6090]
 %%
 %[text] **Note:** ***We now switch to command-line Git for convenience and to show a second way of working with the same repository.***
 %[text] Change the script, then stage and commit the focused change:
 writelines("numLags = 5;","myScript.m")
 git add myScript.m
-git commit -m "Set number of lags to five" %[output:35941602]
-git status %[output:81a86a1e]
+git commit -m "Set number of lags to five" %[output:5d274283]
+git status %[output:1be928c3]
 %%
 %[text] Return to `develop`, merge the completed change, and remove the branch:
-git switch develop %[output:5e87465d]
+git switch develop %[output:385240bc]
 %%
-git merge change-num-lags %[output:05539168]
+git merge change-num-lags
 %%
 %[text] Alternatively, this workflow can be done programmatically via the branch manager:![](text:image:240e)
 %%
-git branch -d change-num-lags %[output:575d10fb]
+git branch -d change-num-lags
 %[text] Stage individual files rather than using `git add .` by habit. It makes each commit easier to review, understand, and revert.
-git rm myScript.m %[output:12ce263a]
+git rm myScript.m
 git commit -am "removed myScript.m"
 %%
 %[text] ### Share work through a Git server
@@ -187,8 +187,8 @@ addPath(project,fullfile(pwd,"tbx","doc"));
 %[text] ### Describe the toolbox with `Contents.m`
 %[text] The previous code creates `tbx/svar/Contents.m` with `writelines`. Its first line is the toolbox H1 description; its version line lets MATLAB identify the toolbox. The generated starter file includes a description, version 1.0.0, date, and a list of public functions.
 %[text] After the toolbox source folder is on the project path, use these commands to confirm that MATLAB can discover the toolbox:
-v = ver('svar') %[output:1fec4eae]
-help svar %[output:3eedbc68]
+v = ver('svar')
+help svar
 %[text] `ver('svar')` returns a structure with the name, version, and date read from `Contents.m`. `help svar` displays the same contents file as the toolbox landing page. Maintain this file as part of each release: update the version and date, and keep the public-function list accurate.
 %[text] Add a `buildfile.m` at the repository root so local users and GitLab can both run `buildtool test` before `buildtool package`.
 %[text] The package step can use `matlab.addons.toolbox.packageToolbox` with the project file or a `matlab.addons.toolbox.ToolboxOptions` object. Keep the generated `.mltbx` file in a release or build-artifacts folder and exclude it from ordinary source commits.
@@ -234,17 +234,17 @@ rmdir('ExampleFiles','s')
 %%
 %[text] ### Usage
 %[text] This is a BVAR prior model implementing Arias et al. 2025
-mdl = uniformirbvarm(3, 2) %[output:72c1a1d0]
-Mdl = mdl.estimate(rand(100,3), Display='off') %[output:400d41b6]
+mdl = uniformirbvarm(3, 2)
+Mdl = mdl.estimate(rand(100,3), Display='off')
 %%
 %[text] ### Testing the tool
-runtests('tests/uniformirbvarmTest.m') %[output:8f283a63] %[output:1f5e3292]
+runtests('tests/uniformirbvarmTest.m')
 %%
 %[text] Once we are happy with the tool, we push the changes to Git and store them in the server.
-git add tbx/ %[output:7755501a]
+git add tbx/
 git add tests/
-git commit -am "added model" %[output:64dba91a]
-git push %[output:7f3ddb1a]
+git commit -am "added model"
+git push
 %%
 %[text] ### Sharing the model
 %[text] How do we expect somebody else use this tool?
@@ -271,10 +271,10 @@ edit main.m
 %[text] ## Buildtool
 %[text] A `buildfile.m` turns the project quality gate into named, repeatable tasks. The build file in this repository follows the same pattern used by many MathWorks toolbox projects: `check` runs Code Analyzer, `test` runs the unit tests and produces coverage reports, and `package` creates the installable `.mltbx` file only after the checks and tests pass.
 %[text] From the repository root, discover the available tasks:
-buildtool -tasks %[output:0970ee48]
+buildtool -tasks
 %%
 %[text] Run the default task, which runs the tests and writes HTML and XML reports to the ignored `build/` folder:
-buildtool %[output:67840a4c]
+buildtool
 %%
 %[text] Run the tasks individually while developing:
 buildtool check
@@ -341,93 +341,60 @@ git push
 %[text:image:7cd4]
 %   data: {"align":"baseline","height":119,"src":"data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAAiEAAACOCAYAAADnwtiVAAABIGlDQ1BzUkdCAAAYlWNgYHzAAAQsDgwMuXklRUHuTgoRkVEKDEggMbm4gAEv+HaNgRFEX9YNLGHjwK8WA3AVAS0E0n+AWCQdzGYUALGTIGwVELu8pKAEyLYAsZMLikBsHyBbKTkjMQXIBrlPpygkyBnIngNkK6QjsZOQ2CmpxclA9h4gWwXhz\/z5DAwWXxgYmCcixJKmMTBsb2dgkLiDEFNZyMDA38rAsO0yQuyzP9jvjGKHcnNKk6F+AonwpOaFBgNpNiCWYfBj0GdwZGAoTjM2gqjgcWBgYL37\/\/9nLQYG9kkMDH\/7\/\/\/\/vej\/\/7+Lge64xcBwoL0gsSgRrJYZiJnS0hgYPi1nYOCNZGAQvgAMtmgc9nGA7StmCGJwZ3ACAHaFTnIw7xNCAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAWCklEQVR4nO3df0zU9+HH8dexwxE416pYC7GcmK2wK02N0KYuph6ZNiOpaCxbZHbC0mxx2BodSyS11VRXA4lmTKtrXUyRudFESsXLYhfNYJ3JGuVstIRA16CnlqvlNF29OylV7\/sH+Xy+x49DDk4\/\/ng+EhK9z937\/f78OD6vz\/v9\/nywffzxx5Hr168rIyNDycnJunbtmgAAAG4lu92upG+++UZOp1M2m40AAgAAbotr167J9vnnn0eSkpIUiUSsbg8AALiPJNntdgIIAAC47ZKuX79udRsAAMB9KMnqBgAAgPsTIQQAAFiCEAIAACxBCAEAAJYghAAAgHHp6+sb1zIDIQQAAMSto6ND27Zt04ULF4Ytu3DhgrZt26bOzs5RyyCEAACAuPT19enAgQO6evWq9u7dK5\/PZy47e\/as9u7dq6tXr+rAgQP65ptvYpZDCAEAAHFJSUnRL37xCyUnJ6u\/v1\/vvPOOuru71d3drbq6OvX39ys5OVkrVqzQd7\/73Zjl2Hp6enhcKgAAiNvZs2e1b98+9ff3y3gC+\/Xr1zVp0iSVl5fL6XSO+nl6QgAAwLjMmjVLL774oiZNmqRr167p+vXrSklJ0YsvvnjTACIRQgAAwAQlJY0vThBCAADAuPh8Pu3du1d9fX2y2+2y2+3q6+sbNlk1FkIIAACIW3d3t9555x1zEmpZWZnKysqGTVYdDSEEAADEpa+vT\/X19fr222\/NSaizZ8\/W7NmzVV5eLrvdrm+\/\/VZ\/+ctfuEUXAAAkTkpKin7605+ak1BnzZplLjMmq6akpGj58uXcogsAABKvr69PKSkpcS8z0BMCAADGZbSQcbMAIhFCAACARQghAADAEoQQAABgCUIIAACwBCEEAABYghACAAAsQQgBAACWIIQAAABL2Lu6uqxuAwAAuA\/ZQqFQRJL5J3iTkugcAQAAt9aNGzdkl6Tk5GQlJydb3R4AAHCfSEpKUpLdbieAAACA2y7Jbrdb3QYAAHAfskUikYjVjQAAAPcfZqECAABLEEIAAIAlCCEAAMAShBAAAGAJQggAALAEIQQAAFiCEAIAACwx5hDS2dmppUuXauvWrbeyPSPaunWrli5dqs7OTgUCAb3wwgtat26dwuFwXOVM5LNjbeeiRYuG\/Rw7dizhdQEAcLezrCeks7NTf\/zjH++ZegxpaWnauXOnjhw5oubmZuXl5Wnbtm3q7Oy8bW0AAOBuYEkI6ezsVFVVlUKh0G2tJz09Xfv379cf\/vAHpaam3tK6JSk1NVXPP\/+8QqGQvF7vLa8PAIC7ybj\/cMxf\/\/pX1dXV6Wc\/+5n+\/ve\/KxQKKS8vT2+88YZSU1MVCAS0du1aXbx4UZI0Y8YM1dbWSpJ+\/\/vfKxQKqaWlRR0dHaqtrVVnZ6def\/11s\/zCwkK98sorN21HOBzWhg0b1N7eLmmgJ6K6ulrp6enD6tm4caM2b96s6dOnm+0cGlSi6zWWPfbYYwqHw2pvbzfLz83NjXubGdvECEBffvml2dbobRW9HSXp2LFj5rbJzs4217u2tlaBQEBVVVXKzs5Wb2+vJA163VivTZs2af78+YPWy1gWXd9oywAASKQJ94T09vbq4MGDKi8vV3t7u06ePClJ2rNnjySpoaFBO3fuVDAY1J49e5Senq5XX31VaWlpKiws1P79+xUIBLRt2zaVl5fryJEjKi8vV0tLy5jmUtTW1qq3t1cNDQ1qaGiQw+HQ22+\/rdTU1GH1TJ06ddBnjRPuU089pSNHjqihoUEdHR3D5oz4fD5t2LBBO3fulCQ1NTWNaduEw2G99957SktLU35+vvn6l19+qd\/+9rc6ePCgGUCmT5+u5uZmNTc3S5J+\/etfKxAIKBAI6K233lJeXp6am5u1cuVKnTlzZsT9UFtba27P6PUqLy83h4TC4bDefvttZWdnq7m5WZs2bVJ7e7vef\/\/9UZcBAJBoE\/4Tus8884wkyel0Sho4YRtX3BcvXlRpaak2bdqkgwcPxiwjNzdXBw8e1LFjx7Ro0aK46n\/llVeG9YZMnz59TJ81hkiWLVsmaWC4pqioSAcOHNC5c+fM97lcLqWnp0uSHA6Hent7FQ6HR+wdCIVCevnll83\/R\/ecBAIBSQO9GVlZWZIGgtDFixe1atUqs7znn39er7\/+ujmP5OLFiyoqKlJqaqrmzp2rvLw8s9djpDZ6vV6FQiFz3+Tn5+vAgQPyer1mve3t7fr5z3+u6upqHTlyRJLM4DXSMgAAEm3CISSWZcuW6fjx4wqFQuZQQnl5uVasWDHsvUaPhCTt3LlTXq9XdXV1Y6pn69atamlpUWFhoRoaGrR27doxt9Hn8434eigUUiAQME\/q8Yh3uCZWG4YuM0JePKKHt4zyjHkq7e3tgwKTMVwz2jIAABLplk1MNXo3jOEASTpw4MCId4kYV+6\/+93v4pprcenSJXV0dCgvLy+u8GGIdWJPS0sbVwAZj9HChdPpHNTDFK9NmzbpyJEj5o8x12X+\/Pnma4WFhZKkt956S4FAYNRlAAAk0i0JIeFwWOvWrdMLL7ygQCCgFStWqLCwUA6HQ+np6UpPT5fD4Rj2OZ\/Pp0AgoMOHD8dVnzE88o9\/\/MOc3CkpZj0GY56GMcfDqDt6uORWy83N1YwZM\/Tee+8pHA6b80hmzJih3Nxcc3lbW5vC4bBOnjxpDjvFkp+fr7S0NH344YeSBiYRG88rGfqslLVr1yovL0\/Tp0\/X1atXYy5jYioAINFuSQhJTU3VG2+8oenTp6u0tFSLFi3S8ePH9eqrr5ohxOVyqaWlRUuXLtVjjz2mvLw81dXVqbS0VE6nU2lpaTe9+p82bZpWrVplzj05fPiwOV8iHA4Pq+ezzz4b9Pnc3FxVV1fr+PHjWrRokUpLS+VyuW7bLbzSQFAyJtcuWbJES5YskSRzEm96erpWrVql9vZ2LVmyxFzH0Qxdr7q6OpWXl2v+\/Pkj1tfb26sNGzbokUceibmMEAIASDRbJBKJWN0IjJ0xCVcSt84CAO5q\/O2YO5zxuHxjaCscDqu3t5chEgDAXY+ekLuA8WA4Aw8QAwDcCwghAADAEgzHAAAASxBCAACAJQghAADAEoQQAABgCUIIAACwBCEEAABYghACAAAsQQgBAACWIIQAAABLEEIAAIAlCCEAAMAShBAAAGAJQggAALAEIQQAAFiCEAIAACxBCAEAAJYghAAAAEsQQgAAgCUIIQAAwBKEEAAAYAlCCAAAsAQhBAAAWMKeyMI+\/\/xznT59Wh0dHeru7lZfX58yMzPlcrlUUFCgH\/zgB4msDgAA3MUS1hNy4sQJ\/e1vf9MHH3ygTz\/9VMFgUMFgUKdPn1Z9fb2qq6vl8XhuWk4wGJTb7VZNTU2imjbm+rxer7KysuT1egf9O5H12Gy2EX\/Gu74ej0dOp1N+v19lZWUqKytLSHvHKxgMaunSpQnbbrdK9Ha7XWpqamSz2W57vUPdCceJdPccKwBunYSEkI8\/\/lhHjx7VV199paeffloVFRV68803tWfPHlVVVcntduuzzz5TbW2t3n\/\/\/URUeVN3yi9ag8PhUGtrqyKRiK5cuaIFCxaourpakUhEkUhE69evt7qJCbFr1y7NmzdP+fn5t73uRAfHRPL7\/dq9e7cOHTokn8+njIwMq5s0IX6\/X06nc0wXFrE4HA699tpr2rJli4LBYAJbB+BuMeHhmN7eXp08eVI3btzQs88+qwULFgxaPm\/ePM2bN08PPfSQdu\/erf379ys3N1c\/\/OEPJ1r1LZWfn69z585Z3Yy7it\/v1+HDh9XQ0GB1U+5IU6ZMUWZmptXN0L59+6xugik\/P18PPPCAWlpatHjxYqubA+A2m3BPyNmzZ\/X1119r7ty5wwJItF\/+8pd69tln1dHRoX\/+859jLr+srExut1tOp1M2m01paWnmle7QIQ6j56Ompkb19fWqr683X\/N6vUpLSxv23liir6qNrvvouqKHT6LLnjNnjubMmTOu4ZWysrKY7TO68m02m9xud8wrx\/\/9739mO4d2+0e3M3o7lpWVDXqvx+ORzWaL+yq3ra1NTqfTvMo3ttvLL79stt3j8Qxaz+g6ol832mfs4+j31dTUDNs+fr9fy5Yt0\/nz5\/XMM88MWrehZQ5lXNVHb9fR9kW0sRxXfr9fTz\/9tE6dOqWCggLz2Bhpn\/r9fs2ZM8ds59DeHa\/Xqzlz5gwbzolnW0f3Eo72\/Ro6ZGW05d\/\/\/rdKS0t17tw5FRcXm+XGOkZjfU8NLpdLjY2NMbcxgHvXhEPIF198oZSUFD366KM3fa\/b7VZ\/f7+OHTsWVx0nTpxQU1OTIpGISkpKVFlZqWAwqF27dsnpdJpDHD6fTx6PR+vXr9fKlSu1cuVK7du3T8FgUJWVlXr33XcViUTU1tamlpaWuLrtz507p6KiIkUiER06dEibN282T5KVlZXauHGjIpGItmzZolOnTsW1ftLAL3Cfz6crV66op6dHra2t5snK4\/Fo9+7d6unp0ZUrVyRJq1evHrGc5uZmVVZWKhKJyO12q7S01Dy5LVu2zNwGGzdu1LJly+T3+7Vv3z653W5VVVXJ7\/frpZde0qFDh+K+Mm1sbJTL5Rq23WbOnKlIJKLq6moVFxerpKREkUhEK1eu1Pbt2xUMBuXxeMz1N\/bzjh075HA4VFRUZJ6kgsGgDh8+rJKSkkH1ZGRkqKmpSY888og+\/PBD5efnxywzWjAYVGlpqSoqKtTa2iqHwzFoXxjH1UihcqzHVUZGhj766CNlZWXp0KFDWr9+\/aB9GolE5HQ6tXr1amVkZOiJJ57Q0aNHJUlHjx7VlClTBv3\/iSeeGHE4Z6zbeqhY369YUlNT1dDQYK7P4sWLY66PpJjfU8PChQt16tQpS+fJALDGhENIMBhUSkqKZs6cedP3zp07V\/39\/Tp9+nRcdZSUlJhzDIae5BobG+X1es05FyOdOIcu6+np0aVLl+JqQ1ZWllauXClJyszM1LRp0yRJXV1d6u7u1sKFCyVJhYWFo\/YIjcQ4sRYVFcnhcCgjI0MVFRU6fPiwgsGgGhsb5Xa7lZGRIYfDocrKSrW2to74S3vBggUqLCyUJK1Zs0bd3d3q6upSW1ubJKmgoECSzHUxXq+urlZra6syMzPldrvjDiDBYFA+n2\/Y\/onebi6XS1lZWWYbot+7ePFiMwQYZRmiT1JdXV366quvzDJGM1qZkhQIBPTjH\/9YRUVF5pwcY19UVlbK4XCY29vYF9Emclw1NjaqoqLCDBNr1qwx19Hlcqmjo0OSdOHCBf3mN7\/RhQsXYgYww1i39VCjfb\/GarT1MZaP9j29fPmyenp6xlU3gLvXhEPIpEmTlJKSMqb33rhxQ\/39\/bp27dpEq5UkrV+\/Xhs3blRBQcGo3e3S4O711atXmyFionp6emSz2SY01n\/lyhWdOXNmxBNAKBQa8eQei9PplMPhkDQQlqZOnSpJ6ujoUHZ2tiZPnjzi54zgk5WVperq6nGuyfhFD2vMmDFD3d3d5rKcnBw9+OCDamtrU09PT8yegHjKlKRwOKwpU6Zo9+7d5snS2BfFxcXm8VJcXKwzZ86YvVDRxnNcGYGoqqrK\/GxBQYH++9\/\/qqenxwxdJ0+e1CeffKKnnnpKn3zyiT799FNJGlMAu51utj43+55GH6cA7i8TDiEPPfSQUlJSdPny5Zu+96OPPlJ\/f\/+Yhm7Gav369eYdJrG6kr1er1paWtTW1qZIJJLQO3QyMzMViUQmdBU3efJkZWdnm1e\/0dLS0uR0OkdcdjM9PT3mfnG5XDFPpNLANtq8ebPOnTunqqqquOuaqB07dphDB6FQyOzNkTRoSKaxsTFmT0A8ZUoDPQcffPCBORQl\/f++OHTokHlcRSKREe9oGe9x5XA45HQ6B90dZbQxPz9fOTk5mjVrlo4fP67HH39cc+fO1eOPP66mpqZBc27uFDdbH2n072n0cQrg\/jLhEPLwww8rJSVFgUDgpu89ePCg+vv79aMf\/Wii1Uoafhuuy+Ua1BMQ7dKlS2ZQ2LFjR9zDMbHk5ORo9uzZ5ph9S0uL\/vWvf8VVhnGSNbr8jds5jeGZkpISc\/glGAxq+\/bt5vDMUEa3tzSwnrNnz1ZOTo559WwMv9TX10sauKqOntdizEeJd1KqcSIaT1gy+Hw+BYNBeb3eYRMVFy5caIaQeHqdRivTYAxFeTwec19Ez58wJm+ONE9ivMdVSUnJoB6YmpoacxKow+HQAw88oD\/96U\/mMOfMmTPl8XjGHMASITMzU4FAwDxmjh49GnP9RlufsXxPp06dekfcOQTg9kpICJk6daouX76s8+fPj\/re+vp6Pfroo\/rJT34y0WolDUx48\/l8Zhfw7t27zaGEkpIS1dfXy+12KycnRyUlJWYX+7x585Senp6QMWiHw6Ht27dr8+bNstls2rt3b9xzQqSBK0Wn06nJkyeb8zKMeQqLFy9WRUWFMjMzzeGUXbt2jVjOokWLVFlZKZvNptbWVjU0NJjzTJqamrR8+XLZbDZt3rxZTU1Nmjx5sp577jlJMidGvvnmm1q+fLl5Z5BxAh56p8rQOzlKSkrGHULWrFmjEydOaPLkyaqsrNS6devMACENhL0nn3xSTz75pHJyckYswwiEBQUF8ng8Ny3TYAxFvfTSS\/L7\/YP2xdDtGC0\/P3\/cx1X0Po3eH0awLCkp0enTp81hOJfLNea5MIkydP0uXLhgPvU4IyNDbrdbxcXFqqmpGXV9RvueSqNPtgVwb7NFIpHIRAu5ePGizp49q6SkJDOUpKWlSZKuX79uvu873\/mO\/vznP+tXv\/rVRKu8YwWDQT333HOqrKy875574Pf7VVpaqoaGhltyQikrK5PL5bpnHuyG+\/v7AiBBT0ydMWOGvv\/97+t73\/uevv76a33xxRc6f\/68ent7FQwG1d\/frxs3bkjSPRdAhvYGtLS06MSJE\/dl13JGRoaKiorMoZ5E8vv9OnXqlHkXEu4NXV1devDBB4fN1wFwf0jY346ZNm2aZs2apYcfflipqamy2+1KSkqS3W6X3W5XcnJyoqq6o2RkZKi0tNSc+V9cXKx3333XkseW3wlWr16t\/\/znPwl9dLrH41FmZqZKS0vv2+16LwoGg9qyZYtee+21EedxAbj3JWQ4BgAAIF4J6wkBAACIByEEAABYghACAAAsQQgBAACWIIQAAABLEEIAAIAlCCEAAMAShBAAAGAJQggAALAEIQQAAFiCEAIAACxBCAEAAJYghAAAAEsQQgAAgCUIIQAAwBKEEAAAYAlCCAAAsAQhBAAAWIIQAgAALEEIAQAAliCEAAAASxBCAACAJQghAADAEoQQAABgCUIIAACwBCEEAABYghACAAAsQQgBAACWIIQAAABLEEIAAIAlCCEAAMAShBAAAGAJQggAALAEIQQAAFiCEAIAACxBCAEAAJYghAAAAEsQQgAAgCUIIQAAwBKEEAAAYAlCCAAAsAQhBAAAWIIQAgAALEEIAQAAliCEAAAASxBCAACAJQghAADAEoQQAABgif8D05aXsgp3rYUAAAAASUVORK5CYII=","width":457}
 %---
-%[output:39c3495d]
-%   data: {"dataType":"text","outputData":{"text":"git version 2.55.0.windows.3\n","truncated":false}}
+%[output:05973b1e]
+%   data: {"dataType":"textualVariable","outputData":{"name":"repo","value":"  <a href=\"matlab:helpPopup('matlab.git.GitRepository')\" style=\"font-weight:bold\">GitRepository<\/a> with properties:\n\n         GitFolder: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\.git\"\n     WorkingFolder: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\"\n     CurrentBranch: [1×1 GitBranch] (main)\n        LastCommit: [1×1 GitCommit] (b30a2e0)\n           Remotes: [2×1 GitRemote] (GitHub origin)\n     ModifiedFiles: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\Workshop.m\"\n    UntrackedFiles: [0×1 string]\n            IsBare: 0\n         IsShallow: 0\n        IsDetached: 0\n        IsWorktree: 0\n"}}
 %---
-%[output:2d6ca45c]
-%   data: {"dataType":"textualVariable","outputData":{"name":"repo","value":"  <a href=\"matlab:helpPopup('matlab.git.GitRepository')\" style=\"font-weight:bold\">GitRepository<\/a> with properties:\n\n         GitFolder: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\.git\"\n     WorkingFolder: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\"\n     CurrentBranch: [1×1 GitBranch] (main -> GitHub\/main)\n        LastCommit: [1×1 GitCommit] (96e740d)\n           Remotes: [2×1 GitRemote] (GitHub origin)\n     ModifiedFiles: \"C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\Workshop.m\"\n    UntrackedFiles: [0×1 string]\n            IsBare: 0\n         IsShallow: 0\n        IsDetached: 0\n        IsWorktree: 0\n"}}
+%[output:23cc48d6]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitBranch')\" style=\"font-weight:bold\">GitBranch<\/a> with properties:\n\n          Name: \"develop\"\n    LastCommit: [1×1 GitCommit] (b30a2e0)\n"}}
 %---
-%[output:12d34c66]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitBranch')\" style=\"font-weight:bold\">GitBranch<\/a> with properties:\n\n          Name: \"develop\"\n    LastCommit: [1×1 GitCommit] (96e740d)\n"}}
-%---
-%[output:40cd6c12]
+%[output:3ae97fa4]
 %   data: {"dataType":"tabular","outputData":{"columnNames":["Status"],"columns":1,"dataTypes":["object"],"header":"table","name":"statusDetails","rowNames":["C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\Workshop.m"],"rows":1,"type":"table","value":[["1×1 Status"]]}}
 %---
-%[output:0d74041c]
+%[output:29a73910]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.sourcecontrol.Status')\" style=\"font-weight:bold\">Status<\/a> enumeration\n\n    Modified\n"}}
 %---
-%[output:52225474]
-%   data: {"dataType":"tabular","outputData":{"columnNames":["Message","Branches","AuthorName","AuthorEmail","AuthorDate","CommitterName","CommitterEmail","CommitterDate"],"columns":8,"dataTypes":["string","cell","categorical","categorical","datetime","categorical","categorical","datetime"],"header":"30×8 table","name":"commitHistory","rowNames":["96e740d6d962677122a09a275fb3d6db5c2b1870","bca0ca80f2ab32aa0dcf4878fc6b3843dd5575a8","e98602e25f18f1311ebefc5403eb4e23c175fb3e","24ea5e0f10db9f22a079684f6f29c4c0fcc4218e","f1329025802268167fb22d6c1669e465021ecd18","c709d2f41f58aad99f654a7c1084a638fb7f98bf","e0fec1d486caef83b572e27ba737b8eb0951c7b0","9b84bccbdd478e3c26548a05cd67858093001dc3","7dbcffb9298064b32d714aaf36bdb1a3f49f2e57","408c141057b4ca34095ed2104f139ea0353a477d","3f4781eb6e721b24bd1ebabed7b5d39e84663996","a4ba6440b7121718f76b40b5e8332ddbf6587714","f338d85a5ddaf1b4677f8af9a0d329c137f8b6cf","e8b17ed6bdb790215ed5bffda3bdf33b18b4568f"],"rows":30,"type":"table","value":[["\"main\"","[\"develop\", \"main\", \"GitHub\/main\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:46 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:46 +0000"],["\"main\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:16 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:16 +0000"],["\"main\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:43:01 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:43:01 +0000"],["\"added build.yml for github\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:41:34 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:41:34 +0000"],["\"Improve workshop README\"","[\"origin\/HEAD\", \"origin\/main\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:33:34 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:33:34 +0000"],["\"removed redundant\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:29:04 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:29:04 +0000"],["\"modified workshop\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:27:16 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:27:16 +0000"],["\"final cleanup\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:10:24 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:10:24 +0000"],["\"added model\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:05:11 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:05:11 +0000"],["\"added model\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:04:36 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 13:04:36 +0000"],["\"Set number of lags to five\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:48:50 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:48:50 +0000"],["\"Changed to 4 lags\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:48:30 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:48:30 +0000"],["\"Added myScript.m\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:47:27 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:47:27 +0000"],["\"cleanup main\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:45:53 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 12:45:53 +0000"]]}}
+%[output:63f3c471]
+%   data: {"dataType":"tabular","outputData":{"columnNames":["Message","Branches","AuthorName","AuthorEmail","AuthorDate","CommitterName","CommitterEmail","CommitterDate"],"columns":8,"dataTypes":["string","cell","categorical","categorical","datetime","categorical","categorical","datetime"],"header":"42×8 table","name":"commitHistory","rowNames":["b30a2e0646d62664e9bd6df7401dc5f5680156d6","6f2c3a51564590d81e96a3a8452433bf8d59ecd8","7fe18598cd5bd3605ef3f8d34c3eedf916f80567","7fcd07363f8c0fb8f3783c688695292210340280","db4dc1bb541c77480e8e35febd4af78db0f1ace0","a1fbab17e24cc97a59716c5305a73dd95e18c221","6b8c604ab50f1e9fe1eac77552946668d42c87f5","7070b255fccde8f3db957142c4805f817d653a86","80a851b28c7780e165455ede7a33d6489b77c66a","819b172aef528cef43415c3fd274e813ef9db6fe","69679b922aa4da866ddfe5456a62142ee2165d55","c84c83bdaf7d3fe88fa68c5de9be437e9f69376d","96e740d6d962677122a09a275fb3d6db5c2b1870","bca0ca80f2ab32aa0dcf4878fc6b3843dd5575a8"],"rows":42,"type":"table","value":[["\"added Workshop clone#\"","[\"develop\", \"main\", \"GitHub\/main\"]","Edu Benet Cerda","ebenetce@mathworks.com","23-Sep-2026 03:23:54 +0000","Edu Benet Cerda","ebenetce@mathworks.com","23-Sep-2026 03:23:54 +0000"],["\"added Workshop clone#\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","23-Sep-2026 02:58:06 +0000","Edu Benet Cerda","ebenetce@mathworks.com","23-Sep-2026 02:58:06 +0000"],["\"added gitlab equivalent\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:34:52 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:34:52 +0000"],["\"removed redundant\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:33:55 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:33:55 +0000"],["\"updated CI rules\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:12:38 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:12:38 +0000"],["\"created toolbox\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:06:25 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 15:06:25 +0000"],["\"Added tests\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:56:12 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:56:12 +0000"],["\"Added files to project\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:55:58 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:55:58 +0000"],["\"Set number of lags to five\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:50:14 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:50:14 +0000"],["\"Back to 5 lines\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:49:39 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:49:39 +0000"],["\"Changed to 4 lags\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:48:48 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:48:48 +0000"],["\"Added myScript.m\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:47:27 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:47:27 +0000"],["\"main\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:46 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:46 +0000"],["\"main\"","[\"<missing>\"]","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:16 +0000","Edu Benet Cerda","ebenetce@mathworks.com","22-Sep-2026 14:44:16 +0000"]]}}
 %---
-%[output:5b4064b6]
+%[output:210a95de]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  2×1 <a href=\"matlab:helpPopup('matlab.sourcecontrol.Status')\" style=\"font-weight:bold\">Status<\/a> enumeration array\n\n    Modified             \n    NotUnderSourceControl\n"}}
 %---
-%[output:4e75827e]
+%[output:5a88dbe6]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  2×1 <a href=\"matlab:helpPopup('matlab.sourcecontrol.Status')\" style=\"font-weight:bold\">Status<\/a> enumeration array\n\n    Modified\n    Added   \n"}}
 %---
-%[output:57e6681b]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitCommit')\" style=\"font-weight:bold\">GitCommit<\/a> with properties:\n\n           Message: \"Added myScript.m\"\n                ID: \"c84c83bdaf7d3fe88fa68c5de9be437e9f69376d\"\n        AuthorName: \"Edu Benet Cerda\"\n       AuthorEmail: \"ebenetce@mathworks.com\"\n        AuthorDate: 22-Sep-2026 14:47:27 +0000\n     CommitterName: \"Edu Benet Cerda\"\n    CommitterEmail: \"ebenetce@mathworks.com\"\n     CommitterDate: 22-Sep-2026 14:47:27 +0000\n     ParentCommits: \"96e740d6d962677122a09a275fb3d6db5c2b1870\"\n"}}
+%[output:99d2b35a]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitCommit')\" style=\"font-weight:bold\">GitCommit<\/a> with properties:\n\n           Message: \"Added myScript.m\"\n                ID: \"aaf9b0aaf1c4157b384396bb4f4a6ffd78ade25e\"\n        AuthorName: \"Edu Benet Cerda\"\n       AuthorEmail: \"ebenetce@mathworks.com\"\n        AuthorDate: 23-Sep-2026 11:12:51 +0000\n     CommitterName: \"Edu Benet Cerda\"\n    CommitterEmail: \"ebenetce@mathworks.com\"\n     CommitterDate: 23-Sep-2026 11:12:51 +0000\n     ParentCommits: \"b30a2e0646d62664e9bd6df7401dc5f5680156d6\"\n"}}
 %---
-%[output:7cef3822]
+%[output:0bd5bcf5]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.sourcecontrol.Status')\" style=\"font-weight:bold\">Status<\/a> enumeration\n\n    Modified\n"}}
 %---
-%[output:9d9b61c6]
+%[output:97f5850a]
+%   data: {"dataType":"text","outputData":{"text":"On branch develop\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   Workshop.m\n\tmodified:   myScript.m\n\nno changes added to commit (use \"git add\" and\/or \"git commit -a\")\n","truncated":false}}
+%---
+%[output:825dd3bd]
 %   data: {"dataType":"text","outputData":{"text":"diff --git a\/myScript.m b\/myScript.m\nindex decea43..d12bcca 100644\n--- a\/myScript.m\n+++ b\/myScript.m\n@@ -1 +1 @@\n-numLags = 5;\n\\ No newline at end of file\n+numLags = 4;\n\\ No newline at end of file\n","truncated":false}}
 %---
-%[output:9649afe2]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitBranch')\" style=\"font-weight:bold\">GitBranch<\/a> with properties:\n\n          Name: \"change-num-lags\"\n    LastCommit: [1×1 GitCommit] (69679b9)\n"}}
+%[output:41435b64]
+%   data: {"dataType":"text","outputData":{"text":"diff --git a\/myScript.m b\/myScript.m\nindex decea43..d12bcca 100644\n--- a\/myScript.m\n+++ b\/myScript.m\n@@ -1 +1 @@\n-numLags = 5;\n\\ No newline at end of file\n+numLags = 4;\n\\ No newline at end of file\n","truncated":false}}
 %---
-%[output:4fc8f37e]
+%[output:69860578]
+%   data: {"dataType":"text","outputData":{"text":"[develop d2c5720] Changed to 4 lags\n 1 file changed, 1 insertion(+), 1 deletion(-)\n","truncated":false}}
+%---
+%[output:02d4bbbe]
+%   data: {"dataType":"text","outputData":{"text":"remote: \nremote: To create a merge request for develop, visit:        \nremote:   https:\/\/insidelabs-git.mathworks.com\/ebenetce\/sharingcodeworkshop\/-\/merge_requests\/new?merge_request%5Bsource_branch%5D=develop        \nremote: \nTo https:\/\/insidelabs-git.mathworks.com\/ebenetce\/sharingcodeworkshop.git\n * [new branch]      develop -> develop\n","truncated":false}}
+%---
+%[output:253b608f]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitBranch')\" style=\"font-weight:bold\">GitBranch<\/a> with properties:\n\n          Name: \"change-num-lags\"\n    LastCommit: [1×1 GitCommit] (d2c5720)\n"}}
+%---
+%[output:223c6090]
 %   data: {"dataType":"text","outputData":{"text":"* change-num-lags\n  develop\n  main\n","truncated":false}}
 %---
-%[output:35941602]
-%   data: {"dataType":"text","outputData":{"text":"[change-num-lags 80a851b] Set number of lags to five\n 1 file changed, 1 insertion(+), 1 deletion(-)\n","truncated":false}}
+%[output:5d274283]
+%   data: {"dataType":"text","outputData":{"text":"[change-num-lags 31af320] Set number of lags to five\n 1 file changed, 1 insertion(+), 1 deletion(-)\n","truncated":false}}
 %---
-%[output:81a86a1e]
+%[output:1be928c3]
 %   data: {"dataType":"text","outputData":{"text":"On branch change-num-lags\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   Workshop.m\n\nno changes added to commit (use \"git add\" and\/or \"git commit -a\")\n","truncated":false}}
 %---
-%[output:5e87465d]
+%[output:385240bc]
 %   data: {"dataType":"text","outputData":{"text":"Switched to branch 'develop'\nM\tWorkshop.m\n","truncated":false}}
-%---
-%[output:05539168]
-%   data: {"dataType":"text","outputData":{"text":"Updating 69679b9..80a851b\nFast-forward\n myScript.m | 2 +-\n 1 file changed, 1 insertion(+), 1 deletion(-)\n","truncated":false}}
-%---
-%[output:575d10fb]
-%   data: {"dataType":"text","outputData":{"text":"Deleted branch change-num-lags (was 80a851b).\n","truncated":false}}
-%---
-%[output:12ce263a]
-%   data: {"dataType":"text","outputData":{"text":"rm 'myScript.m'\n","truncated":false}}
-%---
-%[output:1fec4eae]
-%   data: {"dataType":"textualVariable","outputData":{"header":"struct with fields:","name":"v","value":"       Name: 'SVAR - Structural Vector Autoregression Toolbox'\n    Version: '1.0.0'\n    Release: ''\n       Date: '21-Sep-2026'\n"}}
-%---
-%[output:3eedbc68]
-%   data: {"dataType":"text","outputData":{"text":"  <a href=\"matlab:help svar -displayBanner\">svar<\/a> - Structural Vector Autoregression Toolbox\n  Version 1.0.0 21-Sep-2026\n \n  Folders\n    <a href=\"matlab:help svar -displayBanner\">svar<\/a>     - Estimate and analyse structural vector autoregression models.\n \n  See also <a href=\"matlab:help varm -displayBanner\">varm<\/a>\n\n","truncated":false}}
-%---
-%[output:72c1a1d0]
-%   data: {"dataType":"textualVariable","outputData":{"name":"mdl","value":"  <a href=\"matlab:helpPopup('uniformirbvarm')\" style=\"font-weight:bold\">uniformirbvarm<\/a> with properties:\n\n    DeterminantShift: -3\n         Description: \"3-Dimensional VAR(2) Model\"\n           NumSeries: 3\n                   P: 2\n         SeriesNames: [\"Y1\"    \"Y2\"    \"Y3\"]\n     IncludeConstant: 1\n        IncludeTrend: 0\n       NumPredictors: 0\n                  Mu: [21×1 double]\n                   V: [7×7 double]\n               Omega: [3×3 double]\n                 DoF: -15\n                  AR: {[3×3 double]  [3×3 double]}\n            Constant: [3×1 double]\n               Trend: [3×0 double]\n                Beta: [3×0 double]\n          Covariance: [3×3 double]\n"}}
-%---
-%[output:400d41b6]
-%   data: {"dataType":"textualVariable","outputData":{"name":"Mdl","value":"  <a href=\"matlab:helpPopup('conjugatebvarm')\" style=\"font-weight:bold\">conjugatebvarm<\/a> with properties:\n\n        Description: \"3-Dimensional VAR(2) Model\"\n          NumSeries: 3\n                  P: 2\n        SeriesNames: [\"Y1\"    \"Y2\"    \"Y3\"]\n    IncludeConstant: 1\n       IncludeTrend: 0\n      NumPredictors: 0\n                 Mu: [21×1 double]\n                  V: [7×7 double]\n              Omega: [3×3 double]\n                DoF: 83\n                 AR: {[3×3 double]  [3×3 double]}\n           Constant: [3×1 double]\n              Trend: [3×0 double]\n               Beta: [3×0 double]\n         Covariance: [3×3 double]\n"}}
-%---
-%[output:8f283a63]
-%   data: {"dataType":"text","outputData":{"text":"Running uniformirbvarmTest\n........\nDone uniformirbvarmTest\n__________\n\n","truncated":false}}
-%---
-%[output:1f5e3292]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  1×8 <a href=\"matlab:helpPopup('matlab.unittest.TestResult')\" style=\"font-weight:bold\">TestResult<\/a> array with properties:\n\n    Name\n    Passed\n    Failed\n    Incomplete\n    Duration\n    Details\n\nTotals:\n   8 Passed, 0 Failed, 0 Incomplete.\n   0.12833 seconds testing time.\n"}}
-%---
-%[output:7755501a]
-%   data: {"dataType":"text","outputData":{"text":"warning: in the working copy of 'tbx\/doc\/Copy_of_svar.seasonalDummies.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/svar.companionMatrix.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/svar.companionPower.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/svar.fevd.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/svar.irf.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/svar.seasonalDummies.md', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'tbx\/doc\/uniformirbvarm.md', LF will be replaced by CRLF the next time Git touches it\n","truncated":false}}
-%---
-%[output:64dba91a]
-%   data: {"dataType":"text","outputData":{"text":"[develop 7dbcffb] added model\n 11 files changed, 731 insertions(+), 7 deletions(-)\n create mode 100644 tbx\/doc\/Copy_of_svar.seasonalDummies.md\n create mode 100644 tbx\/doc\/bvar2var.md\n create mode 100644 tbx\/doc\/helptoc.md\n create mode 100644 tbx\/doc\/index.md\n create mode 100644 tbx\/doc\/svar.companionMatrix.md\n create mode 100644 tbx\/doc\/svar.companionPower.md\n create mode 100644 tbx\/doc\/svar.fevd.md\n create mode 100644 tbx\/doc\/svar.irf.md\n create mode 100644 tbx\/doc\/svar.seasonalDummies.md\n create mode 100644 tbx\/doc\/uniformirbvarm.md\n","truncated":false}}
-%---
-%[output:7f3ddb1a]
-%   data: {"dataType":"text","outputData":{"text":"fatal: The current branch develop has no upstream branch.\nTo push the current branch and set the remote as upstream, use\n\n    git push --set-upstream origin develop\n\nTo have this happen automatically for branches without a tracking\nupstream, see 'push.autoSetupRemote' in 'git help config'.\n\n","truncated":false}}
-%---
-%[output:0970ee48]
-%   data: {"dataType":"text","outputData":{"text":"check   - Identify code issues\ndoc     - Build HTML documentation and the MATLAB Help browser index.\npackage - Create a distributable toolbox archive after quality checks and tests pass.\ntest    - Run tests\n\n","truncated":false}}
-%---
-%[output:67840a4c]
-%   data: {"dataType":"text","outputData":{"text":"** Starting test\n........\nGenerating test report. Please wait.\n    Preparing content for the test report.\n    Adding content to the test report.\n    Writing test report to file.\nTest report has been saved to:\n <a href=\"matlab:web('C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\test-results.html','-new')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\test-results.html<\/a>\nMATLAB code coverage report has been saved to:\n <a href=\"matlab:web('https:\/\/127.0.0.1:31516\/static\/hXmKy7Hm\/reportcff05a53-16c8-4cce-b86f-8ea0fce7b699\/coverage.html?snc=TTJU8Z&Filterable=true','-noaddressbox','-new')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.html<\/a>\nCobertura XML code coverage report has been saved to:\n <a href=\"matlab:open('C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.xml')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.xml<\/a>\n\nTest Summary:\n    Total Tests: 8\n         Passed: 8\n         Failed: 0\n     Incomplete: 0\n       Duration: 0.15237 seconds testing time.\n                 \nTest Results:\n    HTML: <a href=\"matlab:web('C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\test-results.html', '-noaddressbox', '-new')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\test-results.html<\/a>\nCode Coverage:\n         HTML: <a href=\"matlab:web('C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.html', '-noaddressbox', '-new')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.html<\/a>\n    Cobertura: <a href=\"matlab:open('C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.xml')\">C:\\Users\\ebenetce\\MATLAB\\CentralBanks\\SNB\\2026-Sep-Visit\\sharingcodeworkshop\\public\\coverage.xml<\/a>\n** Finished test\n\nBuild Successful:\n    <a href=\"matlab:disp(sprintf('\\n')); matlab.unittest.internal.diagnostics.displayCellArrayAsTable([{'test';} {'Successful';} {'';} {'00:00:01';} {'Run tests';}], {'Task' 'Status' 'Reason' 'Duration' 'Description'})\">1 Task<\/a>: 0 Failed, 0 Skipped\n    3.5712 sec total build time\n","truncated":false}}
 %---
