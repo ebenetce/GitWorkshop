@@ -110,10 +110,10 @@ git merge change-num-lags
 %%
 %[text] Alternatively, this workflow can be done programmatically via the branch manager:![](text:image:240e)
 %%
-git branch -d change-num-lags
+git branch -d change-num-lags %[output:919eb0ec]
 %[text] Stage individual files rather than using `git add .` by habit. It makes each commit easier to review, understand, and revert.
-git rm myScript.m
-git commit -am "removed myScript.m"
+git rm myScript.m %[output:91da4b6b]
+git commit -am "removed myScript.m" %[output:6da07adc]
 %%
 %[text] ### Share work through a Git server
 %[text] A remote Git server such as GitHub, GitLab, Bitbucket, or an internal Git server is where your local repository meets the rest of the team. Use `pull` before starting work to retrieve compatible remote changes, and use `push` after committing to publish your local commits:
@@ -178,7 +178,7 @@ writelines(contentsLines,contentsFile)
 %[text] 5. Use the Project toolstrip's **Share** or source-control controls to commit the `.prj` file, source, tests, documentation, `buildfile.m`, and `.gitlab-ci.yml`. \
 %[text] Screenshot cue 1: capture the **New Project** menu with **From Folder** selected. Screenshot cue 2: capture the Project pane showing `tbx`, `tests`, and `doc`, with only `tbx/toolboxName` marked as a project-path folder. These two images make the toolbar route and the desired structure immediately visible.
 %[text] Alternatively, you can do it programmatically with:
-project = matlab.project.createProject(Folder=pwd,Name=toolboxName);
+project = matlab.project.createProject(Folder=pwd,Name=toolboxName); %[output:45626553]
 addFolderIncludingChildFiles(project,fullfile(pwd,"tbx"));
 addFolderIncludingChildFiles(project,fullfile(pwd,"tests"));
 addFolderIncludingChildFiles(project,fullfile(pwd,"tbx","doc"));
@@ -234,11 +234,11 @@ rmdir('ExampleFiles','s')
 %%
 %[text] ### Usage
 %[text] This is a BVAR prior model implementing Arias et al. 2025
-mdl = uniformirbvarm(3, 2)
-Mdl = mdl.estimate(rand(100,3), Display='off')
+mdl = uniformirbvarm(3, 2) %[output:4b180e23]
+Mdl = mdl.estimate(rand(100,3), Display='off') %[output:7b35f7a1]
 %%
 %[text] ### Testing the tool
-runtests('tests/uniformirbvarmTest.m')
+runtests('tests/uniformirbvarmTest.m') %[output:15a639d5] %[output:9081751c]
 %%
 %[text] Once we are happy with the tool, we push the changes to Git and store them in the server.
 git add tbx/
@@ -397,4 +397,28 @@ git push
 %---
 %[output:385240bc]
 %   data: {"dataType":"text","outputData":{"text":"Switched to branch 'develop'\nM\tWorkshop.m\n","truncated":false}}
+%---
+%[output:919eb0ec]
+%   data: {"dataType":"text","outputData":{"text":"Deleted branch change-num-lags (was 31af320).\n","truncated":false}}
+%---
+%[output:91da4b6b]
+%   data: {"dataType":"text","outputData":{"text":"rm 'myScript.m'\n","truncated":false}}
+%---
+%[output:6da07adc]
+%   data: {"dataType":"text","outputData":{"text":"[develop 82c1969] removed myScript.m\n 2 files changed, 67 insertions(+), 101 deletions(-)\n delete mode 100644 myScript.m\n","truncated":false}}
+%---
+%[output:45626553]
+%   data: {"dataType":"error","outputData":{"errorType":"runtime","text":"Error using <a href=\"matlab:matlab.lang.internal.introspective.errorDocCallback('matlab.internal.project.api.createProject')\" style=\"font-weight:bold\">matlab.internal.project.api.createProject<\/a>\nThe specified folder already contains a project.\n\nError in matlab.project.createProject\n\nError in matlab.project.createProject\n\nError in matlab.project.createProject"}}
+%---
+%[output:4b180e23]
+%   data: {"dataType":"textualVariable","outputData":{"name":"mdl","value":"  <a href=\"matlab:helpPopup('uniformirbvarm')\" style=\"font-weight:bold\">uniformirbvarm<\/a> with properties:\n\n    DeterminantShift: -3\n         Description: \"3-Dimensional VAR(2) Model\"\n           NumSeries: 3\n                   P: 2\n         SeriesNames: [\"Y1\"    \"Y2\"    \"Y3\"]\n     IncludeConstant: 1\n        IncludeTrend: 0\n       NumPredictors: 0\n                  Mu: [21×1 double]\n                   V: [7×7 double]\n               Omega: [3×3 double]\n                 DoF: -15\n                  AR: {[3×3 double]  [3×3 double]}\n            Constant: [3×1 double]\n               Trend: [3×0 double]\n                Beta: [3×0 double]\n          Covariance: [3×3 double]\n"}}
+%---
+%[output:7b35f7a1]
+%   data: {"dataType":"textualVariable","outputData":{"name":"Mdl","value":"  <a href=\"matlab:helpPopup('conjugatebvarm')\" style=\"font-weight:bold\">conjugatebvarm<\/a> with properties:\n\n        Description: \"3-Dimensional VAR(2) Model\"\n          NumSeries: 3\n                  P: 2\n        SeriesNames: [\"Y1\"    \"Y2\"    \"Y3\"]\n    IncludeConstant: 1\n       IncludeTrend: 0\n      NumPredictors: 0\n                 Mu: [21×1 double]\n                  V: [7×7 double]\n              Omega: [3×3 double]\n                DoF: 83\n                 AR: {[3×3 double]  [3×3 double]}\n           Constant: [3×1 double]\n              Trend: [3×0 double]\n               Beta: [3×0 double]\n         Covariance: [3×3 double]\n"}}
+%---
+%[output:15a639d5]
+%   data: {"dataType":"text","outputData":{"text":"Setting up <a href=\"matlab:helpPopup matlab.unittest.fixtures.ProjectFixture\" style=\"font-weight:bold\">ProjectFixture<\/a>\nDone setting up <a href=\"matlab:helpPopup matlab.unittest.fixtures.ProjectFixture\" style=\"font-weight:bold\">ProjectFixture<\/a>: Project 'svar' is already loaded. Setup is not required.\n__________\n\nRunning uniformirbvarmTest\n........\nDone uniformirbvarmTest\n__________\n\nTearing down <a href=\"matlab:helpPopup matlab.unittest.fixtures.ProjectFixture\" style=\"font-weight:bold\">ProjectFixture<\/a>\nDone tearing down <a href=\"matlab:helpPopup matlab.unittest.fixtures.ProjectFixture\" style=\"font-weight:bold\">ProjectFixture<\/a>: Teardown is not required.\n__________\n\n","truncated":false}}
+%---
+%[output:9081751c]
+%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  1×8 <a href=\"matlab:helpPopup('matlab.unittest.TestResult')\" style=\"font-weight:bold\">TestResult<\/a> array with properties:\n\n    Name\n    Passed\n    Failed\n    Incomplete\n    Duration\n    Details\n\nTotals:\n   8 Passed, 0 Failed, 0 Incomplete.\n   0.33869 seconds testing time.\n"}}
 %---
