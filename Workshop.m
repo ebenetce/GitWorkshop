@@ -15,7 +15,7 @@
 %[text] For this workshop, open MATLAB in the repository root: the folder containing the hidden `.git` directory.
 %[text] MATLAB includes a Git API, so you do not need an external Git installation to work with a repository from MATLAB. Create a repository object with **`gitrepo`**, **`gitinit`** or most commonly:
 %[text] ```matlabCodeExample
-%[text] repo = gitclone('https://github.com/ebenetce/GitWorkshop.git')
+%[text] repo = gitclone('https://github.com/ebenetce/gitworkshop!')
 %[text] ```
 %[text] `repo` is a `matlab.git.GitRepository` object. Its methods let you inspect status and history, create and switch branches, commit, merge, pull, and push.
 %[text] Alternatively, if Git is installed on your computer, you can call its command-line interface from the MATLAB Command Window. Confirm that MATLAB can find the external Git executable:
@@ -29,6 +29,17 @@ end
 %[text] ## Git concepts in one minute
 %[text] A file moves through a small number of Git states. You edit a file in your working folder, select the changes for the next commit by staging them, and then create a commit: a named, permanent snapshot in the local repository. A branch is a named line of work that lets you make a focused change without changing the main line of development.
 %[text] The command `git status` is the most useful Git command. Run it often; it tells you which branch you are on, whether your files have changed, and what is staged.
+%[text] ### The Git loop
+%[text] Every focused change moves through the same four places:
+%[text:table]
+%[text] | Place | What it contains | Typical command |
+%[text] | --- | --- | --- |
+%[text] | Working folder | Your edits, before Git records them | `git status`, `git diff` |
+%[text] | Staging area | The exact changes selected for the next commit | `git add`, `git diff --staged` |
+%[text] | Local commit | A permanent local snapshot with a message | `git commit` |
+%[text] | Remote | Commits shared with the team server | `git push` |
+%[text:table]
+%[text] Use the loop deliberately: inspect the working folder, review the diff, stage only related files, review the staged diff, commit, and then push.
 %%
 %[text] ## Hands-on Git workflow
 %[text] Start on the `develop` branch and inspect the repository:
@@ -61,14 +72,19 @@ statusDetail.Status %[output:7cef3822]
 %[text] Try now to make an edit to the file:
 edit myScript.m
 %%
-%[text] Inspect the changes
+%[text] Complete the full Git loop once from the command line. First inspect the working folder and the unstaged change:
+git status
 git diff -- myScript.m %[output:9d9b61c6]
+%[text] Stage only this file, then inspect exactly what the commit will contain:
+git add myScript.m
+git diff --staged -- myScript.m
+%[text] Commit the reviewed change locally, then publish the branch:
+git commit -m "Changed to 4 lags"
+git push origin develop
 %[text] You can also compare the file graphically with **Source Control \> View Changes**:
 %[text] ![](text:image:5a2c)
 %%
-%[text] Commit the modified version:
-add(repo, "myScript.m")
-commit(repo,Message="Changed to 4 lags",Files="myScript.m") %[output:92d4fa0d]
+%[text] The same loop is available through MATLAB's Git API: `status`, `add`, `commit`, and `push` operate on the same repository and history as the command-line calls.
 %%
 %[text] ### Create, merge, and delete a focused branch
 %[text] A branch is an independent line of development from a shared codebase; it lets you build and test a focused change safely, then review and merge it into develop when it is ready.
@@ -95,6 +111,7 @@ git merge change-num-lags %[output:05539168]
 git branch -d change-num-lags %[output:575d10fb]
 %[text] Stage individual files rather than using `git add .` by habit. It makes each commit easier to review, understand, and revert.
 git rm myScript.m %[output:12ce263a]
+git commit -am "removed myScript.m"
 %%
 %[text] ### Share work through a Git server
 %[text] A remote Git server such as GitHub, GitLab, Bitbucket, or an internal Git server is where your local repository meets the rest of the team. Use `pull` before starting work to retrieve compatible remote changes, and use `push` after committing to publish your local commits:
@@ -115,6 +132,22 @@ git rm myScript.m %[output:12ce263a]
 %[text] Opening the project later restores its project path instead of relying on manually changed global MATLAB paths. Use the Project toolstrip to view files and source-control status, define startup shortcuts, and keep supporting code organised.
 %[text] Do not add generated outputs, large data downloads, local credentials, or personal preference files to the repository. Add appropriate patterns to `.gitignore` before those files are accidentally staged.
 %[text] **Note: once you work with git. Every single change needs to be recorded in git, a rename, moving a file into a folder, etc. MATLAB Projects will track all that and you will get informed when things get in a bad state.**
+%%
+%[text] ## A toolbox-ready project layout
+%[text] Make the Git repository the MATLAB project and keep distributable code, tests, and documentation in separate top-level folders. This structure keeps development, packaging, and continuous integration aligned from the first commit.
+%[text:table]
+%[text] | Path | Purpose |
+%[text] | --- | --- |
+%[text] | `tbx/` | Everything shared with end users |
+%[text] | `tbx/SVAR/` | Public toolbox code and **`Contents.m`** |
+%[text] | `tbx/SVAR/+somefolder/` | Namespaced implementation that is not on the main path |
+%[text] | `tbx/doc/` | Getting-started material, examples, and release notes |
+%[text] | `tests/` | `matlab.unittest` tests that validate toolbox behaviour |
+%[text] | `resources/` | Project metadata and package resources |
+%[text] | `SVAR.prj` | The shared MATLAB project definition |
+%[text] | `buildfile.m` and CI YAML files | Repeatable local and CI checks, tests, and packaging |
+%[text:table]
+%[text] The toolbox package can include source and documentation without shipping tests or build configuration. The project path contains only toolbox source, while tests and tooling remain isolated. `Contents.m` provides a discoverable toolbox overview, and `buildfile.m` makes testing and packaging reproducible.
 %%
 %[text] ### Create the layout programmatically
 %[text] The following commands create a complete starter layout. Replace `svar` and the starter text with your toolbox name and description, then run this section in a new repository.
@@ -149,44 +182,6 @@ addFolderIncludingChildFiles(project,fullfile(pwd,"tests"));
 addFolderIncludingChildFiles(project,fullfile(pwd,"tbx","doc"));
 addPath(project,fullfile(pwd,"tbx",toolboxName));
 addPath(project,fullfile(pwd,"tbx","doc"));
-%%
-%[text] ### Project startup and shutdown
-%[text] It might be important to make sure that the project has certain environment set up
-%[text] ```matlabCodeExample
-%[text] function startupEnvironment()
-%[text] % This project needs python 3.12
-%[text] env = pyenv()
-%[text] assert(env.Version >= "3.12")
-%[text] 
-%[text] % It also needs dynare 7
-%[text] assert(dynare_version, '7.1')
-%[text] 
-%[text] % Check for any other dependency, MATLAB ones can be handled better.
-%[text] end
-%[text] ```
-%%
-%[text] ## A toolbox-ready project layout
-%[text] My preferred approach is to make the Git repository the MATLAB project and to keep the distributable toolbox, tests, and documentation in separate top-level folders. That structure keeps development, packaging, and continuous integration aligned from the first commit.
-%[text] For example, a toolbox called SVAR could have the following layout:
-%[text:table]
-%[text] | Path | Purpose |
-%[text] | --- | --- |
-%[text] | tbx | Everything that I want shared with end-users |
-%[text] | `tbx/SVAR/` | Public toolbox code and **`Contents.m`** |
-%[text] | `tbx/SVAR/+somefolder/` | Namespaced implementation that is not on the main path |
-%[text] | `tbx/doc/` | Getting-started material, examples, and release notes |
-%[text] | `tests/` | `matlab.unittest` tests that validate toolbox behaviour |
-%[text] | `resources/` | Project metadata and package resources, ignore |
-%[text] | `SVAR.prj` | The shared MATLAB project definition |
-%[text] | `buildfile.m` and `.gitlab-ci.yml` | Repeatable local and CI checks, tests, and packaging |
-%[text:table]
-%[text] This separation has practical advantages:
-%[text] - The toolbox package can include `tbx/SVAR` and selected documentation without shipping test fixtures, build outputs, or CI configuration.
-%[text] - Tests can be run locally and in GitLab from the same `tests` folder, giving the team a repeatable quality gate.
-%[text] - The project adds only the toolbox source folder to the MATLAB path; test helpers and repository tooling do not accidentally shadow user code.
-%[text] - `Contents.m` provides a discoverable overview when users type `help SVAR` or browse the installed toolbox.
-%[text] - `buildfile.m` makes package creation reproducible instead of depending on a sequence of clicks. \
-%%
 %[text] ### Describe the toolbox with `Contents.m`
 %[text] The previous code creates `tbx/svar/Contents.m` with `writelines`. Its first line is the toolbox H1 description; its version line lets MATLAB identify the toolbox. The generated starter file includes a description, version 1.0.0, date, and a list of public functions.
 %[text] After the toolbox source folder is on the project path, use these commands to confirm that MATLAB can discover the toolbox:
@@ -275,14 +270,45 @@ buildtool package
 %[text] The resulting `releases/svar.mltbx` is an installable toolbox archive. Keep release artifacts out of ordinary source commits unless your team's release process explicitly versions them. In continuous integration, run `buildtool check test doc` on every change and reserve `buildtool package` for a tagged release.
 %%
 %[text] ## Automation
-%[text] Having some level of automation helps a lot. Even if only the tests are running automatically, it speed up development quite a bit.
-edit('.github/workflows/build.yml')
+%[text] Automation runs the same checks for every contributor. This short exercise makes a test fail on purpose, lets continuous integration report the failure, and then restores the passing build.
+%[text] 1. Start a focused branch for the exercise: \
+git switch -c ci-practice
+%[text] 1. Run the tests locally and confirm that they pass: \
+buildtool test
+%[text] 1. Open `tests/uniformirbvarmTest.m` and deliberately change one expected value so that one test fails. Save the file, then run: \
+buildtool test
+%[text] 1. Review, commit, and push only the intentional test change: \
+git status
+git diff -- tests/uniformirbvarmTest.m
+git add tests/uniformirbvarmTest.m
+git commit -m "Demonstrate a CI test failure"
+git push -u origin ci-practice
+%[text] 1. Open a pull request or merge request from `ci-practice` to `develop`. In GitHub, open the **Actions** tab; in GitLab, open **Build \> Pipelines**. Find the failed test job and inspect its test or coverage report.
+%[text] 2. Restore the correct expected value, run `buildtool test` locally, then commit and push the fix: \
+git add tests/uniformirbvarmTest.m
+git commit -m "Fix CI test"
+git push
+%[text] Refresh the pull request or merge request and confirm that the test job is green. This is the feedback loop: reproduce a failure locally, let CI verify it independently, and keep the shared branch protected by passing tests.
 %%
 %[text] ## Collaboration habits
 %[text] Treat text-based MATLAB files such as `.m` files as the default for code and live scripts when they need to be version controlled. Git can compare them line by line. Binary `.mlx` live scripts and `.mat` files are less reviewable and may create harder-to-resolve conflicts.
 %[text] Before changing a shared file, pull first and communicate with teammates when you expect to edit the same area. Resolve conflicts in the affected file, run the code again, and commit the resolution; a conflict is a request for a human decision, not an error to hide.
 %[text] Keep secrets out of Git. Never commit passwords, API keys, tokens, or private data. When in doubt, pause before staging and inspect `git diff --staged`.
 %[text] The essential habit is simple: check status, make a focused change, test it, review the diff, commit it locally, and share it intentionally.
+%%
+%[text] ## Advanced appendix
+%[text] ### Project startup and shutdown
+%[text] A project can check external dependencies when it opens. Keep this optional setup separate from the core Git workflow, and give collaborators clear messages when a dependency is missing.
+%[text] ```matlabCodeExample
+%[text] function startupEnvironment()
+%[text] % This project needs Python 3.12.
+%[text] pythonEnvironment = pyenv();
+%[text] assert(pythonEnvironment.Version >= "3.12")
+%[text] % It also needs Dynare 7.1.
+%[text] assert(dynare_version, "7.1")
+%[text] % Check other external dependencies here.
+%[text] end
+%[text] ```
 
 %[appendix]{"version":"1.0"}
 %---
@@ -342,9 +368,6 @@ edit('.github/workflows/build.yml')
 %---
 %[output:9d9b61c6]
 %   data: {"dataType":"text","outputData":{"text":"diff --git a\/myScript.m b\/myScript.m\nindex decea43..d12bcca 100644\n--- a\/myScript.m\n+++ b\/myScript.m\n@@ -1 +1 @@\n-numLags = 5;\n\\ No newline at end of file\n+numLags = 4;\n\\ No newline at end of file\n","truncated":false}}
-%---
-%[output:92d4fa0d]
-%   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitCommit')\" style=\"font-weight:bold\">GitCommit<\/a> with properties:\n\n           Message: \"Changed to 4 lags\"\n                ID: \"69679b922aa4da866ddfe5456a62142ee2165d55\"\n        AuthorName: \"Edu Benet Cerda\"\n       AuthorEmail: \"ebenetce@mathworks.com\"\n        AuthorDate: 22-Sep-2026 14:48:48 +0000\n     CommitterName: \"Edu Benet Cerda\"\n    CommitterEmail: \"ebenetce@mathworks.com\"\n     CommitterDate: 22-Sep-2026 14:48:48 +0000\n     ParentCommits: \"c84c83bdaf7d3fe88fa68c5de9be437e9f69376d\"\n"}}
 %---
 %[output:9649afe2]
 %   data: {"dataType":"textualVariable","outputData":{"name":"ans","value":"  <a href=\"matlab:helpPopup('matlab.git.GitBranch')\" style=\"font-weight:bold\">GitBranch<\/a> with properties:\n\n          Name: \"change-num-lags\"\n    LastCommit: [1×1 GitCommit] (69679b9)\n"}}
